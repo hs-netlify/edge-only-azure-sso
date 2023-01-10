@@ -53,20 +53,6 @@ const ssoAuth = async (request, context) => {
     const redirectUri = url.origin;
     const originAppUrl = params.get("origin");
 
-    const isValid = async (token) => {
-      const response = await fetch(
-        `https://graph.microsoft.com/oidc/userinfo`,
-        {
-          headers: {
-            Authorization: `bearer ${token}`,
-          },
-        }
-      );
-
-      const data = await response.json();
-      return data.error ? false : true;
-    };
-
     const authRedirect = () => {
       return Response.redirect(
         `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
@@ -81,7 +67,7 @@ const ssoAuth = async (request, context) => {
       if (access_token) {
         const res = new Response(null, { status: 302 });
         res.headers.set("Location", state || url.origin);
-        res.cookies.set("AAD_Token", access_token);
+        res.headers.set("Set-Cookie", ["AAD_Token", access_token]);
         console.log("Res", res);
         return res;
       } else {
