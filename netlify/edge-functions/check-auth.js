@@ -67,7 +67,7 @@ const ssoAuth = async (request, context) => {
       if (access_token) {
         const res = new Response(null, { status: 302 });
         res.headers.set("Location", state || url.origin);
-        res.headers.set("Set-Cookie", ["AAD_Token", access_token]);
+        res.headers.set("Set-Cookie", `AAD_Token= ${access_token}`);
         console.log("Res", res);
         return res;
       } else {
