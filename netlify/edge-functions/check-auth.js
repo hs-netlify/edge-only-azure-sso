@@ -65,10 +65,10 @@ const ssoAuth = async (request, context) => {
       console.log("state here", state);
       const access_token = await getToken(code, clientId, secret, url.origin);
       if (access_token) {
-        const res = new Response(null, { status: 302 });
-        res.headers.set("Location", state || url.origin);
-        res.headers.set("Set-Cookie", `AAD_Token= ${access_token}`);
-        console.log("Res", res);
+        const res = new Response(JSON.stringify({ AAD_Token: access_token }), {
+          status: 302,
+        });
+
         return res;
       } else {
         return authRedirect();
