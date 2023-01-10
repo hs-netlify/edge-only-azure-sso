@@ -43,7 +43,7 @@ const ssoAuth = async (request, context) => {
   } = Deno.env.toObject();
 
   if (clientId && tenantId && secret) {
-    const authToken = context.cookies.get("AAD_Token");
+    // const authToken = context.cookies.get("AAD_Token");
     const url = new URL(request.url);
     const path = url.pathname;
     const params = new URLSearchParams(url.search);
@@ -75,23 +75,14 @@ const ssoAuth = async (request, context) => {
       );
     };
 
-    if (authToken) {
-      console.log(request.url);
-      if (await isValid(authToken)) {
-        return context.next();
-      } else {
-        context.cookies.delete("AAD_Token");
-        const res = new Response(null, { status: 302 });
-        res.headers.set("Location", url.origin);
-        return res;
-      }
-    } else if (code) {
+    if (code) {
       console.log("state here", state);
       const access_token = await getToken(code, clientId, secret, url.origin);
       if (access_token) {
-        context.cookies.set({ name: "AAD_Token", value: access_token });
         const res = new Response(null, { status: 302 });
         res.headers.set("Location", state || url.origin);
+        res.cookies.set("AAD_Token", access_token);
+        console.log("Res", res);
         return res;
       } else {
         return authRedirect();
@@ -100,7 +91,10 @@ const ssoAuth = async (request, context) => {
       return authRedirect();
     }
   } else {
-    return context.next();
+    console.log(
+      "ERROR - ENV Vars not set: AZURE_AD_CLIENT_ID , AZURE_AD_TENANT_ID, AZURE_AD_SECRET"
+    );
+    return;
   }
 };
 
