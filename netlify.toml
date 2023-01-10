@@ -1,0 +1,8 @@
+
+[[edge_functions]]
+    path='/*'
+    function='check-auth'
+
+
+[functions]
+  node_bundler = "esbuild"
