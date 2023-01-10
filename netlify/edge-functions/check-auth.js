@@ -65,10 +65,10 @@ const ssoAuth = async (request, context) => {
       console.log("state here", state);
       const access_token = await getToken(code, clientId, secret, url.origin);
       if (access_token) {
-        const res = new Response(JSON.stringify({ aadToken: access }), {
+        const res = new Response(null, {
           status: 302,
         });
-        res.headers.set("Location", state || url.origin);
+        res.headers.set("Location", `${state}?aadToken=${access_token}`);
 
         return res;
       } else {
