@@ -76,7 +76,6 @@ const ssoAuth = async (request, context) => {
     };
 
     if (authToken) {
-      console.log(request.url);
       if (await isValid(authToken)) {
         return context.next();
       } else {
@@ -86,7 +85,6 @@ const ssoAuth = async (request, context) => {
         return res;
       }
     } else if (code) {
-      console.log("state here", state);
       const access_token = await getToken(code, clientId, secret, url.origin);
       if (access_token) {
         context.cookies.set({ name: "AAD_Token", value: access_token });
